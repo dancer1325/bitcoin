@@ -134,27 +134,31 @@ take as input a `SCRIPT` expression, and return the script describing P2SH and P
 outputs with the input as embedded script. The names of the functions do
 not contain "p2" for brevity.
 
-### Multisig
+### Multisig -- Multi-signature --
 
-Several pieces of software use multi-signature (multisig) scripts based
-on Bitcoin's OP_CHECKMULTISIG opcode. To support these, we introduce the
-`multi(k,key_1,key_2,...,key_n)` and `sortedmulti(k,key_1,key_2,...,key_n)`
-functions. They represent a *k-of-n*
-multisig policy, where any *k* out of the *n* provided `KEY` expressions must
-sign.
+* == scripts /
+  * -- based on -- Bitcoin's `OP_CHECKMULTISIG` opcode
+* uses
+  * by SEVERAL pieces of software
+* requirements
+  * 💡introduce *k-of-n* multisig policy 💡
+    * == 👀*k* out of the *n* provided `KEY` expressions MUST sign👀
+    * are
+      * `multi(k,key_1,key_2,...,key_n)`
+        * `key_*`
+          * ⚠️order is IMPORTANT⚠️
+            * ❌if you search TXOs / key order is DIFFERENT -> NOT match == NOT found ❌
+      * `sortedmulti(k,key_1,key_2,...,key_n)`
+        * `key_*`
+          * ⚠️order is NOT IMPORTANT⚠️
+            * Reason: 🧠reordered by it -- BIP67 -- 🧠
 
-Key order is significant for `multi()`. A `multi()` expression describes a multisig script
-with keys in the specified order, and in a search for TXOs, it will not match
-outputs with multisig scriptPubKeys that have the same keys in a different
-order. Also, to prevent a combinatorial explosion of the search space, if more
+* TODO: Also, to prevent a combinatorial explosion of the search space, if more
 than one of the `multi()` key arguments is a BIP32 wildcard path ending in `/*`
 or `*'`, the `multi()` expression only matches multisig scripts with the `i`th
 child key from each wildcard path in lockstep, rather than scripts with any
 combination of child keys from each wildcard path.
 
-Key order does not matter for `sortedmulti()`. `sortedmulti()` behaves in the same way
-as `multi()` does but the keys are reordered in the resulting script such that they
-are lexicographically ordered as described in BIP67.
 
 #### Basic multisig example
 
