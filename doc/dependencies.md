@@ -1,17 +1,20 @@
 # Dependencies
 
-These are the dependencies used by Bitcoin Core.
-You can find installation instructions in the `/doc/build-*.md` file for your platform, or self-compile
-them using [depends](/depends/README.md).
+* goal
+  * Bitcoin Core's dependencies
+
+* ways to install
+  * installation instructions | "/doc/build-*.md" OR
+  * self-compile them -- via -- [depends](/depends/README.md)
 
 ## Compiler
 
-Bitcoin Core requires one of the following compilers.
+* choose one of the NEXT= compilers
 
-| Dependency | Minimum required |
-| --- | --- |
+| Dependency                      | Minimum required                                      |
+|---------------------------------|-------------------------------------------------------|
 | [Clang](https://clang.llvm.org) | [16.0](https://github.com/bitcoin/bitcoin/pull/30263) |
-| [GCC](https://gcc.gnu.org) | [11.1](https://github.com/bitcoin/bitcoin/pull/29091) |
+| [GCC](https://gcc.gnu.org)      | [11.1](https://github.com/bitcoin/bitcoin/pull/29091) |
 
 ## Required
 
