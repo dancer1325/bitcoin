@@ -3,23 +3,28 @@ Bitcoin Core
 
 Setup
 ---------------------
-Bitcoin Core is the original Bitcoin client and it builds the backbone of the network. It downloads and, by default, stores the entire history of Bitcoin transactions, which requires several hundred gigabytes or more of disk space. Depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to several days or more.
-
-To download Bitcoin Core, visit [bitcoincore.org](https://bitcoincore.org/en/download/).
+* Bitcoin Core
+  * == 👀ORIGINAL Bitcoin client👀
+  * by default,
+    * stores the ALL Bitcoin transactions history
+      * == 100x gigabytes
+  * synchronization process
+    * 's time == [few hours, >= 1days]
 
 Running
 ---------------------
-The following are some helpful notes on how to run Bitcoin Core on your native platform.
 
 ### Unix
 
+* TODO:
 Unpack the files into a directory and run:
 
 - `bin/bitcoin-qt` (GUI) or
 - `bin/bitcoind` (headless)
 - `bin/bitcoin` (wrapper command)
 
-The `bitcoin` command supports subcommands like `bitcoin gui`, `bitcoin node`, and `bitcoin rpc` exposing different functionality. Subcommands can be listed with `bitcoin help`.
+The `bitcoin` command supports subcommands like `bitcoin gui`, `bitcoin node`, and `bitcoin rpc` exposing different functionality
+* Subcommands can be listed with `bitcoin help`.
 
 ### Windows
 
@@ -27,11 +32,13 @@ Unpack the files into a directory, and then run bitcoin-qt.exe.
 
 ### macOS
 
-Drag Bitcoin Core to your applications folder, and then run Bitcoin Core.
+* steps
+  * drag Bitcoin Core | your "applications/" 
+  * run Bitcoin Core
 
 ### Need Help?
 
-* See the documentation at the [Bitcoin Wiki](https://en.bitcoin.it/wiki/Main_Page)
+* TODO: See the documentation at the [Bitcoin Wiki](https://en.bitcoin.it/wiki/Main_Page)
 for help and more information.
 * Ask for help on [Bitcoin StackExchange](https://bitcoin.stackexchange.com).
 * Ask for help on #bitcoin on Libera Chat. If you don't have an IRC client, you can use [web.libera.chat](https://web.libera.chat/#bitcoin).
@@ -39,7 +46,6 @@ for help and more information.
 
 Building
 ---------------------
-The following are developer notes on how to build Bitcoin Core on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [Dependencies](dependencies.md)
 - [macOS Build Notes](build-osx.md)
@@ -51,7 +57,6 @@ The following are developer notes on how to build Bitcoin Core on your native pl
 
 Development
 ---------------------
-The Bitcoin repo's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Productivity Notes](productivity.md)
@@ -67,8 +72,8 @@ The Bitcoin repo's [root README](/README.md) contains relevant information on th
 - [Internal Design Docs](design/)
 
 ### Resources
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/) forums, in the [Development & Technical Discussion board](https://bitcointalk.org/index.php?board=6.0).
-* Discuss project-specific development on #bitcoin-core-dev on Libera Chat. If you don't have an IRC client, you can use [web.libera.chat](https://web.libera.chat/#bitcoin-core-dev).
+* [BitcoinTalk](https://github.com/dancer1325/bitcointalk-forum-docs)
+* [Libera Chat](https://web.libera.chat/#bitcoin-core-dev)
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)
@@ -88,7 +93,3 @@ The Bitcoin repo's [root README](/README.md) contains relevant information on th
 - [Tor Support](tor.md)
 - [Transaction Relay Policy](policy/README.md)
 - [ZMQ](zmq.md)
-
-License
----------------------
-Distributed under the [MIT software license](/COPYING).

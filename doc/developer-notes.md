@@ -1,68 +1,23 @@
 Developer Notes
 ===============
 
-<!-- markdown-toc start -->
-**Table of Contents**
-
-- [Developer Notes](#developer-notes)
-    - [Coding Style (General)](#coding-style-general)
-    - [Coding Style (C++)](#coding-style-c)
-    - [Coding Style (Python)](#coding-style-python)
-    - [Coding Style (Doxygen-compatible comments)](#coding-style-doxygen-compatible-comments)
-      - [Generating Documentation](#generating-documentation)
-    - [Development tips and tricks](#development-tips-and-tricks)
-        - [Compiling for debugging](#compiling-for-debugging)
-        - [Show sources in debugging](#show-sources-in-debugging)
-        - [`debug.log`](#debuglog)
-        - [Signet, testnet, and regtest modes](#signet-testnet-and-regtest-modes)
-        - [DEBUG_LOCKORDER](#debug_lockorder)
-        - [DEBUG_LOCKCONTENTION](#debug_lockcontention)
-        - [Valgrind suppressions file](#valgrind-suppressions-file)
-        - [Compiling for test coverage](#compiling-for-test-coverage)
-        - [Performance profiling with perf](#performance-profiling-with-perf)
-        - [Sanitizers](#sanitizers)
-    - [Locking/mutex usage notes](#lockingmutex-usage-notes)
-    - [Threads](#threads)
-    - [Ignoring IDE/editor files](#ignoring-ideeditor-files)
-- [Development guidelines](#development-guidelines)
-    - [General Bitcoin Core](#general-bitcoin-core)
-    - [Wallet](#wallet)
-    - [General C++](#general-c)
-    - [C++ data structures](#c-data-structures)
-    - [Strings and formatting](#strings-and-formatting)
-    - [Shadowing](#shadowing)
-    - [Lifetimebound](#lifetimebound)
-    - [Threads and synchronization](#threads-and-synchronization)
-    - [Scripts](#scripts)
-        - [Shebang](#shebang)
-    - [Source code organization](#source-code-organization)
-    - [GUI](#gui)
-    - [Subtrees](#subtrees)
-    - [Upgrading LevelDB](#upgrading-leveldb)
-      - [File Descriptor Counts](#file-descriptor-counts)
-      - [Consensus Compatibility](#consensus-compatibility)
-    - [Scripted diffs](#scripted-diffs)
-        - [Suggestions and examples](#suggestions-and-examples)
-    - [Release notes](#release-notes)
-    - [RPC interface guidelines](#rpc-interface-guidelines)
-    - [Internal interface guidelines](#internal-interface-guidelines)
-
-<!-- markdown-toc end -->
-
 Coding Style (General)
 ----------------------
 
-Various coding styles have been used during the history of the codebase,
-and the result is not very consistent. However, we're now trying to converge to
-a single style, which is specified below. When writing patches, favor the new
-style over attempting to mimic the surrounding style, except for move-only
-commits.
+* ❌NOT very consistent❌
+  * Reason: 🧠MULTIPLE coding styles | history of the codebase🧠
 
-Do not submit patches solely to modify the style of existing code.
+* goal
+  * 1! style
+
+* | move-only commits,
+  *❌NOT require mimic the style❌
+* ❌NOT submit patches / ONLY modify the style❌
 
 Coding Style (C++)
 ------------------
 
+* TODO:
 - **Indentation and whitespace rules** as specified in
 [src/.clang-format](/src/.clang-format). You can use the provided
 [clang-format-diff script](/contrib/devtools/README.md#clang-format-diffpy)
@@ -353,18 +308,21 @@ Development tips and tricks
 
 ### Compiling for debugging
 
-When using the default build configuration by running `cmake -B build`, the
-`-DCMAKE_BUILD_TYPE` is set to `RelWithDebInfo`. This option adds debug symbols
-but also performs some compiler optimizations that may make debugging trickier
-as the code may not correspond directly to the source.
+* `cmake -B build`
+  * == default build configuration
+  * -> `-DCMAKE_BUILD_TYPE = RelWithDebInfo`
+    * adds debug symbols
+    * performs compiler optimizations / debugging trickier
+      * Reason: 🧠code may NOT correspond to the source🧠
 
-If you need to build exclusively for debugging, set the `-DCMAKE_BUILD_TYPE`
-to `Debug` (i.e. `-DCMAKE_BUILD_TYPE=Debug`). You can always check the cmake
-build options of an existing build with `ccmake build`.
+* if you need to build EXCLUSIVELY for debugging -> set `-DCMAKE_BUILD_TYPE = Debug`
+
+* `ccmake build`
+  * check EXISTING build's cmake build options  
 
 ### Show sources in debugging
 
-If you have ccache enabled, absolute paths are stripped from debug information
+* TODO: If you have ccache enabled, absolute paths are stripped from debug information
 with the `-fdebug-prefix-map` and `-fmacro-prefix-map` options (if supported by the
 compiler). This might break source file detection in case you move binaries
 after compilation, debug from the directory other than the project root or use
@@ -395,20 +353,27 @@ ln -s /path/to/project/root/src src
 
 ### `debug.log`
 
-If the code is behaving strangely, take a look in the `debug.log` file in the data directory;
-error and debugging messages are written there.
+* stored | data directory
+* write
+  * error & debugging messages 
 
-Debug logging can be enabled on startup with the `-debug` and `-loglevel`
-configuration options and toggled while bitcoind is running with the `logging`
-RPC.  For instance, launching bitcoind with `-debug` or `-debug=1` will turn on
-all log categories and `-loglevel=trace` will turn on all log severity levels.
+* ways to enable
+  * | startup,
+    * -- via --
+      * `-debug` (or `-debug=1`)
+        * turn on ALL log categories 
+      * `-loglevel` 
+        * if `-loglevel=trace` -> turn on ALL log severity levels
+  * | bitcoind is running,
+    * toggle it -- via -- `logging` RPC
 
-The Qt code routes `qDebug()` output to `debug.log` under category "qt": run with `-debug=qt`
-to see it.
+* Qt code
+  * routes `qDebug()` output -- to -- "debug.log"'s category "qt"
+    * if you want to see it -> run -- with -- `-debug=qt`
 
 ### Signet, testnet, and regtest modes
 
-If you are testing multi-machine code that needs to operate across the internet,
+* TODO: If you are testing multi-machine code that needs to operate across the internet,
 you can run with either the `-signet` or the `-testnet4` config option to test
 with "play bitcoins" on a test network.
 
@@ -716,128 +681,133 @@ Additional resources:
 Locking/mutex usage notes
 -------------------------
 
-The code is multi-threaded and uses mutexes and the
-`LOCK` and `TRY_LOCK` macros to protect data structures.
+* code
+  * 💡multi-threaded💡
+  * macros protect data structures -- via -- mutexes & macros (`LOCK` & `TRY_LOCK`) 
 
-Deadlocks due to inconsistent lock ordering (thread 1 locks `cs_main` and then
-`cs_wallet`, while thread 2 locks them in the opposite order: result, deadlock
-as each waits for the other to release its lock) are a problem. Compile with
-`-DDEBUG_LOCKORDER` (or use `-DCMAKE_BUILD_TYPE=Debug`) to get lock order inconsistencies
-reported in the `debug.log` file.
+* Deadlocks -- due to -- inconsistent lock ordering
+  * == 
+    * thread 1 locks `cs_main` & `cs_wallet`
+    * thread 2 locks them | ⚠️opposite order⚠️
+  * ⚠️problem⚠️
+    * Reason:🧠EACH thread waits for the other to release its lock🧠
+  * if you want lock order inconsistencies are reported | "debug.log" -> compile -- with -- 
+    * `-DDEBUG_LOCKORDER` OR
+    * `-DCMAKE_BUILD_TYPE=Debug` 
 
-Re-architecting the core code so there are better-defined interfaces
-between the various components is a goal, with any necessary locking
-done by the components (e.g. see the self-contained `FillableSigningProvider` class
-and its `cs_KeyStore` lock for example).
+* goal
+  * re-architecting the core code / 
+    * BETTER-defined interfaces -- BETWEEN -- VARIOUS components
+    * ANY necessary locking done -- by the -- components
+      * _Example:_ `FillableSigningProvider` & `cs_KeyStore`
 
 Threads
 -------
 
 - [Main thread (`bitcoind`)](https://doxygen.bitcoincore.org/bitcoind_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97)
-  : Started from `main()` in `bitcoind.cpp`. Responsible for starting up and
-  shutting down the application.
+  - started -- from -- "bitcoind.cpp"'s `main()`
+  - responsible for 
+    - starting up the application
+    - shutting down the application
 
 - [Init load (`b-initload`)](https://doxygen.bitcoincore.org/namespacenode.html#ab4305679079866f0f420f7dbf278381d)
-  : Performs various loading tasks that are part of init but shouldn't block the node from being started: external block import,
-   reindex, reindex-chainstate, main chain activation, spawn indexes background sync threads and mempool load.
+  - performs VARIOUS loading tasks /
+    - part of init
+    - should NOT block the node -- from -- being started
+  - _Example:_
+    - external block import,
+    - reindex,
+    - reindex-chainstate,
+    - main chain activation,
+    - spawn indexes background sync threads
+    - mempool load
 
 - [CCheckQueue::Loop (`b-scriptch.x`)](https://doxygen.bitcoincore.org/class_c_check_queue.html#a6e7fa51d3a25e7cb65446d4b50e6a987)
-  : Parallel script validation threads for transactions in blocks.
+  - parallel script validation threads -- for -- transactions | blocks
 
 - [ThreadHTTP (`b-http`)](https://doxygen.bitcoincore.org/httpserver_8cpp.html#abb9f6ea8819672bd9a62d3695070709c)
-  : Libevent thread to listen for RPC and REST connections.
+  - Libevent thread /
+    - listen for connections
+      - RPC
+      - REST 
 
 - [HTTP worker threads(`b-httpworker.x`)](https://doxygen.bitcoincore.org/httpserver_8cpp.html#aa6a7bc27265043bc0193220c5ae3a55f)
-  : Threads to service RPC and REST requests.
+  - serve RPC & REST requests
 
 - [Indexer threads (`b-txindex`, etc)](https://doxygen.bitcoincore.org/class_base_index.html#a96a7407421fbf877509248bbe64f8d87)
-  : One thread per indexer.
+  - 1 thread / indexer
 
 - [SchedulerThread (`b-scheduler`)](https://doxygen.bitcoincore.org/class_c_scheduler.html#a14d2800815da93577858ea078aed1fba)
-  : Does asynchronous background tasks like dumping wallet contents, dumping
-  addrman and running asynchronous validationinterface callbacks.
+  - makes asynchronous background tasks
+  - _Example:_
+    - dumping 
+      - wallet contents,
+      - addrman
+    - running asynchronous validation interface callbacks
 
 - [TorControlThread (`b-torcontrol`)](https://doxygen.bitcoincore.org/torcontrol_8cpp.html#a52a3efff23634500bb42c6474f306091)
-  : Libevent thread for tor connections.
+  - Libevent thread -- for -- tor connections
 
-- Net threads:
-
+- NET threads
   - [ThreadMessageHandler (`b-msghand`)](https://doxygen.bitcoincore.org/class_c_connman.html#aacdbb7148575a31bb33bc345e2bf22a9)
-    : Application level message handling (sending and receiving). Almost
-    all net_processing and validation logic runs on this thread.
-
+    - application level message handling (sending & receiving)
+    - ALL net_processing & validation logic
   - [ThreadDNSAddressSeed (`b-dnsseed`)](https://doxygen.bitcoincore.org/class_c_connman.html#aa7c6970ed98a4a7bafbc071d24897d13)
-    : Loads addresses of peers from the DNS.
-
+    - loads addresses of peers -- from --- DNS
   - ThreadMapPort (`b-mapport`)
-    : Universal plug-and-play startup/shutdown.
-
+    - universal plug-and-play startup/shutdown.
   - [ThreadSocketHandler (`b-net`)](https://doxygen.bitcoincore.org/class_c_connman.html#a765597cbfe99c083d8fa3d61bb464e34)
-    : Sends/Receives data from peers on port 8333.
-
+    - sends/Receives data -- from -- peers | port 8333
   - [ThreadOpenAddedConnections (`b-addcon`)](https://doxygen.bitcoincore.org/class_c_connman.html#a0b787caf95e52a346a2b31a580d60a62)
-    : Opens network connections to added nodes.
-
+    - opens network connections -- to -- added nodes
   - [ThreadOpenConnections (`b-opencon`)](https://doxygen.bitcoincore.org/class_c_connman.html#a55e9feafc3bab78e5c9d408c207faa45)
-    : Initiates new connections to peers.
-
+    - initiates NEW connections -- to -- peers
   - [ThreadI2PAcceptIncoming (`b-i2paccept`)](https://doxygen.bitcoincore.org/class_c_connman.html#a57787b4f9ac847d24065fbb0dd6e70f8)
-    : Listens for and accepts incoming I2P connections through the I2P SAM proxy.
+    - I2P connections -- through the -- I2P SAM proxy
+      - listens for 
+      - accepts incoming 
 
 Ignoring IDE/editor files
 --------------------------
 
-In closed-source environments in which everyone uses the same IDE, it is common
-to add temporary files it produces to the project-wide `.gitignore` file.
+* | closed-source environments / everyone uses the SAME IDE,
+  * recommended
+    * add TEMPORARY files | ".gitignore"
 
-However, in open source software such as Bitcoin Core, where everyone uses
-their own editors/IDE/tools, it is less common. Only you know what files your
-editor produces and this may change from version to version. The canonical way
-to do this is thus to create your local gitignore. Add this to `~/.gitconfig`:
-
-```
-[core]
-        excludesfile = /home/.../.gitignore_global
-```
-
-(alternatively, type the command `git config --global core.excludesfile ~/.gitignore_global`
-on a terminal)
-
-Then put your favourite tool's temporary filenames in that file, e.g.
-```
-# NetBeans
-nbproject/
-```
-
-Another option is to create a per-repository excludes file `.git/info/exclude`.
-These are not committed but apply only to one repository.
-
-If a set of tools is used by the build system or scripts the repository (for
-example, lcov) it is perfectly acceptable to add its files to `.gitignore`
-and commit them.
+* | Bitcoin Core,
+  * NOT common to use them
+    * Reason:🧠EACH one uses their OWN editors/IDE/tools🧠
+  * recommendations
+    * create your local ".gitignore" & add it
+      * ways
+          ```.gitconfig
+          [core]
+            excludesfile = /home/.../.gitignore_global
+          ```
+          ```
+          git config --global core.excludesfile ~/.gitignore_global
+          ```
+    * create a excludes file ".git/info/exclude"
+    * if set of tools is used by the build system OR scripts the repository -> add its files | `.gitignore`
 
 Development guidelines
 ============================
 
-A few non-style-related recommendations for developers, as well as points to
-pay attention to for reviewers of Bitcoin Core code.
-
 General Bitcoin Core
 ----------------------
 
-- New features should be exposed on RPC first, then can be made available in the GUI.
+- NEW features
+  - expose it | RPC
+    - FIRSTLY
+      - Reason: 🧠
+        - better automatic testing
+        - GUI's test suite: VERY limited🧠 
+  - AVAILABLE | GUI
 
-  - *Rationale*: RPC allows for better automatic testing. The test suite for
-    the GUI is very limited.
+- | BEFORE merge PR, pass CI
 
-- Make sure pull requests pass CI before merging.
-
-  - *Rationale*: Makes sure that they pass thorough testing, and that the tester will keep passing
-     on the master branch. Otherwise, all new pull requests will start failing the tests, resulting in
-     confusion and mayhem.
-
-  - *Explanation*: If the test suite is to be updated for a change, this has to
-    be done first.
+- explanation
+  - if the test suite is updated for a change -> it must be done first
 
 Logging
 -------
@@ -881,82 +851,77 @@ careful to avoid side-effects in those expressions.
 Wallet
 -------
 
-- Make sure that no crashes happen with run-time option `-disablewallet`.
+- `-disablewallet`
+  - == run-time option /
+    - make sure NO crashes happen  
 
 General C++
 -------------
 
-For general C++ guidelines, you may refer to the [C++ Core
-Guidelines](https://isocpp.github.io/CppCoreGuidelines/).
+* [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/)
+  * [passing (non-)fundamental types](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-conventional)
 
-Common misconceptions are clarified in those sections:
-
-- Passing (non-)fundamental types in the [C++ Core
-  Guideline](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Rf-conventional).
-
-- If you use the `.h`, you must link the `.cpp`.
-
-  - *Rationale*: Include files define the interface for the code in implementation files. Including one but
-      not linking the other is confusing. Please avoid that. Moving functions from
-      the `.h` to the `.cpp` should not result in build errors.
-
-- Use the RAII (Resource Acquisition Is Initialization) paradigm where possible. For example, by using
-  `unique_ptr` for allocations in a function.
-
-  - *Rationale*: This avoids memory and resource leaks, and ensures exception safety.
+- if you use `.h` -> link the `.cpp`
+  - Reason:🧠if you do NOT link -> confusing🧠
+- if you move functions FROM `.h` -- to -- `.cpp` -> should NOT result build errors
+- if possible -> use RAII (Resource Acquisition Is Initialization)
+  - _Example:_ use `unique_ptr` for allocations | function
+  - Reason:🧠
+    - avoids memory & resource leaks
+    - ensures exception safety🧠
 
 C++ data structures
 --------------------
 
-- Never use the `std::map []` syntax when reading from a map, but instead use `.find()`.
+- | read from a map,
+  - ❌NEVER use `std::map []`❌
+  - use `.find()`
+  - Reason:🧠 `[]`
+    - caused 
+      - memory leaks 
+      - race conditions
+    - write -- to a -- map
 
-  - *Rationale*: `[]` does an insert (of the default element) if the item doesn't
-    exist in the map yet. This has resulted in memory leaks in the past, as well as
-    race conditions (expecting read-read behavior). Using `[]` is fine for *writing* to a map.
+- ❌NOT compare data structure1's iterator vs data structure2's iterator❌
+  - Reason:🧠 behavior is undefined 🧠
 
-- Do not compare an iterator from one data structure with an iterator of
-  another data structure (even if of the same type).
+- watch out for out-of-bounds vector access
+  - `&vch[vch.size()]`
+    - illegal
+    - include `&vch[0]` -- for -- EMPTY vector
+  - recommendations
+    - use 
+      - `vch.data()`
+      - `vch.data() + vch.size()`
 
-  - *Rationale*: Behavior is undefined. In C++ parlor this means "may reformat
-    the universe", in practice this has resulted in at least one hard-to-debug crash bug.
+- vector bounds checking
+  - ONLY enabled | debug mode
+  - ❌NOT rely on it❌
 
-- Watch out for out-of-bounds vector access. `&vch[vch.size()]` is illegal,
-  including `&vch[0]` for an empty vector. Use `vch.data()` and `vch.data() +
-  vch.size()` instead.
+- | define NON-static class members, initialize ALL   
+  - if it's skipped for a good reason -> add an explicit comment
+  - Reason:🧠
+    - avoid uninitialized values
+    - easy to spot uninitialized ones🧠
 
-- Vector bounds checking is only enabled in debug mode. Do not rely on it.
+  ```cpp
+  class A
+  {
+      uint32_t m_count{0};
+  }
+  ```
 
-- Initialize all non-static class members where they are defined.
-  If this is skipped for a good reason (i.e., optimization on the critical
-  path), add an explicit comment about this.
+- by default, declare constructors `explicit`
+  - Reason:🧠avoid unintended [conversions](https://en.cppreference.com/w/cpp/language/converting_constructor)🧠
 
-  - *Rationale*: Ensure determinism by avoiding accidental use of uninitialized
-    values. Also, static analyzers balk about this.
-    Initializing the members in the declaration makes it easy to
-    spot uninitialized ones.
+- use explicitly 
+  - signed or unsigned `char`s OR
+  - bare `char`
+  -  | ONLY pass -- to a -- third-party API -> use  
+  - `uint8_t` & `int8_t`
 
-```cpp
-class A
-{
-    uint32_t m_count{0};
-}
-```
-
-- By default, declare constructors `explicit`.
-
-  - *Rationale*: This is a precaution to avoid unintended
-    [conversions](https://en.cppreference.com/w/cpp/language/converting_constructor).
-
-- Use explicitly signed or unsigned `char`s, or even better `uint8_t` and
-  `int8_t`. Do not use bare `char` unless it is to pass to a third-party API.
-  This type can be signed or unsigned depending on the architecture, which can
-  lead to interoperability problems or dangerous conditions such as
-  out-of-bounds array accesses.
-
-- Prefer explicit constructions over implicit ones that rely on 'magical' C++ behavior.
-
-  - *Rationale*: Easier to understand what is happening, thus easier to spot mistakes, even for those
-  that are not language lawyers.
+-  use explicit constructions vs implicit ones / rely on C++ behavior
+  - Reason:🧠 easier to understand🧠
 
 - Use `std::span` as function argument when it can operate on any range-like container.
 

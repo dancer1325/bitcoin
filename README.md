@@ -62,8 +62,15 @@ Testing
 * recommended |
   * large or high-risk changes
 
-
 Translations
 ------------
 
 * [translations changes](https://www.transifex.com/bitcoin/bitcoin/)
+
+
+## how to load CMake project?
+* it's needed ❓
+* Problems
+  * Problem1: "Cannot generate into ~/bitcoin. It is already used for unknown project"
+    * Attempt1: `rm -rf .idea/`
+    * Solution: TODO: `rm -f CMakeCache.txt`
