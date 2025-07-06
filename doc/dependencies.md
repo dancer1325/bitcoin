@@ -9,7 +9,7 @@
 
 ## Compiler
 
-* choose one of the NEXT= compilers
+* choose one of the NEXT compilers
 
 | Dependency                      | Minimum required                                      |
 |---------------------------------|-------------------------------------------------------|
