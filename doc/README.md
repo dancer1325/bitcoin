@@ -32,9 +32,7 @@ Unpack the files into a directory, and then run bitcoin-qt.exe.
 
 ### macOS
 
-* steps
-  * drag Bitcoin Core | your "applications/" 
-  * run Bitcoin Core
+* [here](build-osx.md#running-bitcoin-core)
 
 ### Need Help?
 

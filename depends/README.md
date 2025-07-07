@@ -1,8 +1,11 @@
 # Depends build
 
-This is a system of building and caching dependencies necessary for building
-Bitcoin Core. It supports cross-compilation. For more details see [description.md](description.md),
-as well as [packages.md](packages.md) for how to add packages.
+* == 💡system / build & cache dependencies💡
+* ⚠️required -- for -- building Bitcoin Core⚠️
+* supports cross-compilation
+* see 
+  * [description.md](description.md)
+  * [packages.md](packages.md)
 
 ## Usage
 
@@ -20,14 +23,15 @@ To build dependencies for the current arch+OS:
 
 ### macOS
 
-Install Xcode Command Line Tools and Homebrew Package Manager,
-see [build-osx.md](../doc/build-osx.md).
-
-    brew install cmake make ninja
-
-To build dependencies for the current arch+OS:
-
-    gmake
+* steps
+  * installation
+    * follow [build-osx](../doc/build-osx.md#3-install-required-dependencies)
+    * `brew install cmake make ninja`
+  * build dependencies
+    * `gmake`
+      * Problems:
+        * Problem1: "gmake: *** No targets specified and no makefile found.  Stop."
+          * Solution: TODO:
 
 ### FreeBSD
 
@@ -55,17 +59,16 @@ To build dependencies for the current arch+OS:
 
 ## Configuring Bitcoin Core
 
-**When configuring Bitcoin Core, CMake by default will ignore the depends output.** In
-order for it to pick up libraries, tools, and settings from the depends build,
-you must specify the toolchain file.
-In the above example for Ubuntu, a file named `depends/x86_64-pc-linux-gnu/toolchain.cmake` will be
-created. To use it during configuring Bitcoin Core:
+* | configure Bitcoin Core,
+  * CMkake,
+    * ⚠️by default, ignore the depends output⚠️
+    * if you want / pick up the depends output -> you must specify it
+      * _Example:_ | Ubuntu, create `depends/x86_64-pc-linux-gnu/toolchain.cmake`
+        ```
+        cmake -B build --toolchain depends/x86_64-pc-linux-gnu/toolchain.cmake
+        ```
 
-    cmake -B build --toolchain depends/x86_64-pc-linux-gnu/toolchain.cmake
-
-## Dependency Options
-
-The following can be set when running make: `make FOO=bar`
+## Dependency Options | run make
 
 - `SOURCES_PATH`: Downloaded sources will be placed here
 - `BASE_CACHE`: Built packages will be placed here
@@ -94,39 +97,33 @@ variables will be set when generating the Bitcoin Core buildsystem. In this case
 
 ## Cross compilation
 
-To build for another arch/OS:
-
-    make HOST=host-platform-triplet
-
-For example:
-
-    make HOST=x86_64-w64-mingw32 -j4
-
-Common `host-platform-triplet`s for cross compilation are:
-
-- `i686-pc-linux-gnu` for Linux x86 32 bit
-- `x86_64-pc-linux-gnu` for Linux x86 64 bit
-- `x86_64-w64-mingw32` for Win64
-- `x86_64-apple-darwin` for macOS
-- `arm64-apple-darwin` for ARM macOS
-- `arm-linux-gnueabihf` for Linux ARM 32 bit
-- `aarch64-linux-gnu` for Linux ARM 64 bit
-- `powerpc64-linux-gnu` for Linux POWER 64 bit (big endian)
-- `powerpc64le-linux-gnu` for Linux POWER 64 bit (little endian)
-- `riscv32-linux-gnu` for Linux RISC-V 32 bit
-- `riscv64-linux-gnu` for Linux RISC-V 64 bit
-- `s390x-linux-gnu` for Linux S390X
-
-The paths are automatically configured and no other options are needed.
+* `make HOST=host-platform-triplet`
+  * build -- for -- ANOTHER arch/OS
+  * _Example:_ `make HOST=x86_64-w64-mingw32 -j4`
+  * ALLOWED `host-platform-triplet`
+    - `i686-pc-linux-gnu` for Linux x86 32 bit
+    - `x86_64-pc-linux-gnu` for Linux x86 64 bit
+    - `x86_64-w64-mingw32` for Win64
+    - `x86_64-apple-darwin` for macOS
+    - `arm64-apple-darwin` for ARM macOS
+    - `arm-linux-gnueabihf` for Linux ARM 32 bit
+    - `aarch64-linux-gnu` for Linux ARM 64 bit
+    - `powerpc64-linux-gnu` for Linux POWER 64 bit (big endian)
+    - `powerpc64le-linux-gnu` for Linux POWER 64 bit (little endian)
+    - `riscv32-linux-gnu` for Linux RISC-V 32 bit
+    - `riscv64-linux-gnu` for Linux RISC-V 64 bit
+    - `s390x-linux-gnu` for Linux S390X
 
 #### For macOS cross compilation
 
     apt install clang lld llvm zip
 
-Clang 18 or later is required. You must also obtain the macOS SDK before
-proceeding with a cross-compile. Under the depends directory, create a
-subdirectory named `SDKs`. Then, place the extracted SDK under this new directory.
-For more information, see [SDK Extraction](../contrib/macdeploy/README.md#sdk-extraction).
+* requirements
+  * Clang 18+
+  * obtain the macOS SDK
+  * | "depends/",
+    * create a subdirectory / named `SDKs`
+    * place the [extracted SDK](../contrib/macdeploy/README.md#sdk-extraction) | this NEW directory
 
 #### For Win64 cross compilation
 

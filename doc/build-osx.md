@@ -57,7 +57,7 @@ git clone https://github.com/bitcoin/bitcoin.git
 * steps to build GUI
   * install 
     * Qt -- `brew install qt@6` --
-    * libqrencode
+    * [libqrencode](#libqrencode)
   * pass `-DBUILD_GUI=ON` 
 
 * build with Qt binaries / downloaded -- from the -- Qt website
@@ -99,12 +99,10 @@ For more information on IPC, see: [multiprocess.md](multiprocess.md).
 
 #### Test Suite Dependencies
 
-There is an included test suite that is useful for testing code changes when developing.
-To run the test suite (recommended), you will need to have Python 3 installed:
-
-``` bash
-brew install python
-```
+* allows
+  * | develop, test code changes
+* requirements
+  * `brew install python`
 
 ---
 
@@ -124,6 +122,12 @@ It is required that you have `python` and `zip` installed.
 ``` bash
 cmake -B build -DBUILD_GUI=ON
 ```
+* 👀generated | ["build/"](/build)👀
+* Problems:
+  * Problem1: "Could NOT find QRencod"
+    * Solution: `brew install qrencode`
+  * Problem2: "Could NOT find Qt (missing: Qt6_DIR) (Required is at least version "6.2""
+    * Solution: `brew install qt@6`
 
 ##### No Wallet or GUI
 
@@ -141,10 +145,16 @@ cmake -B build -DENABLE_WALLET=OFF
 
 ### 2. Compile
 
-``` bash
-cmake --build build     # Use "-j N" here for N parallel jobs.
-ctest --test-dir build  # Use "-j N" for N parallel tests. Some tests are disabled if Python 3 is not available.
-```
+* `cmake --build build`
+  * if you want to use N parallel jobs -> use "-j N"
+  * Problems:
+    * Problem1: "/src/util/strencodings.h:390:50: error: no member named 'bit_cast' in namespace 'std'"
+      * Solution: TODO:
+
+* `ctest --test-dir build`
+  * if you want to use N parallel tests -> use "-j N"
+  * ⚠️if Python 3 is NOT available -> SOME tests are disabled⚠️  
+
 
 ### 3. Deploy (optional)
 
@@ -155,6 +165,17 @@ cmake --build build --target deploy
 ```
 
 ## Running Bitcoin Core
+
+* create an EMPTY configuration file
+  * BEFORE running
+
+    ```shell
+    mkdir -p "/Users/${USER}/Library/Application Support/Bitcoin"
+    
+    touch "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
+    
+    chmod 600 "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
+    ```
 
 * AVAILABLE | 
   * "./build/bin/bitcoind"
@@ -178,17 +199,6 @@ cmake --build build --target deploy
 
     ``` bash
     /Users/${USER}/Library/Application Support/Bitcoin/
-    ```
-
-* create an EMPTY configuration file
-  * BEFORE running 
-
-    ```shell
-    mkdir -p "/Users/${USER}/Library/Application Support/Bitcoin"
-    
-    touch "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
-    
-    chmod 600 "/Users/${USER}/Library/Application Support/Bitcoin/bitcoin.conf"
     ```
 
 * monitor the download process
