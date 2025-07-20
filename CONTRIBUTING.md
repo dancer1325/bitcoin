@@ -64,11 +64,8 @@ and [https://gnusha.org/bitcoin-core-dev/](https://gnusha.org/bitcoin-core-dev/)
 Discussion about codebase improvements happens in GitHub issues and pull
 requests.
 
-The developer
-[mailing list](https://groups.google.com/g/bitcoindev)
-should be used to discuss complicated or controversial consensus or P2P protocol changes before working on
-a patch set.
-Archives can be found on [https://gnusha.org/pi/bitcoindev/](https://gnusha.org/pi/bitcoindev/).
+* [developer mailing list](https://groups.google.com/g/bitcoindev)
+* [Archives](https://gnusha.org/pi/bitcoindev/)
 
 
 Contributor Workflow

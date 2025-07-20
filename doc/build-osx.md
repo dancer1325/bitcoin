@@ -8,14 +8,14 @@
     * CL utilities,
     * GUI
 
-## Preparation
+## Requirements
 
 ### 1. Xcode Command Line Tools
 
 * Xcode Command Line Tools
   * == collection of build tools
   * allows
-    * build Bitcoin Core -- from -- source
+    * 👀build Bitcoin Core -- from -- source👀
   * `xcode-select --install`
     * install it
 
@@ -37,7 +37,7 @@ git clone https://github.com/bitcoin/bitcoin.git
 
 #### Wallet Dependencies
 
-* ❌if you want to run `bitcoind` or  `bitcoin-qt` -> NOT necessary to build wallet functionality❌ 
+* ❌if you want to run `bitcoind` OR `bitcoin-qt` -> NOT necessary to build wallet functionality❌ 
 
 ###### Descriptor Wallet Support
 
