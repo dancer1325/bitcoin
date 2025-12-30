@@ -26,3 +26,10 @@ target/
 /guix-build-*
 
 /ci/scratch/
+/.idea/.name
+/.idea/aws.xml
+/.idea/bitcoin.iml
+/.idea/editor.xml
+/.idea/modules.xml
+/.idea/vcs.xml
+/.idea/workspace.xml
