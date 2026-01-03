@@ -67,9 +67,13 @@ Translations
 
 * [translations changes](https://www.transifex.com/bitcoin/bitcoin/)
 
-
 ## how to load CMake project?
-* it's needed ❓
+* allows
+  * displaying EACH file's entity (object, class, ...) structure
+* ways
+  * -- via -- IDE
+    * [CMakeLists.txt](CMakeLists.txt) > Right click > Load CMake
+  * TODO: others
 * Problems
   * Problem1: "Cannot generate into ~/bitcoin. It is already used for unknown project"
     * Attempt1: `rm -rf .idea/`

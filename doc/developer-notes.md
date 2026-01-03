@@ -17,30 +17,32 @@ Coding Style (General)
 Coding Style (C++)
 ------------------
 
-* TODO:
-- **Indentation and whitespace rules** as specified in
-[src/.clang-format](/src/.clang-format). You can use the provided
-[clang-format-diff script](/contrib/devtools/README.md#clang-format-diffpy)
-tool to clean up patches automatically before submission.
-  - Braces on new lines for classes, functions, methods.
-  - Braces on the same line for everything else.
-  - 4 space indentation (no tabs) for every block except namespaces.
-  - No indentation for `public`/`protected`/`private` or for `namespace`.
-  - No extra spaces inside parenthesis; don't do `( this )`.
-  - No space after function names; one space after `if`, `for` and `while`.
-  - If an `if` only has a single-statement `then`-clause, it can appear
-    on the same line as the `if`, without braces. In every other case,
-    braces are required, and the `then` and `else` clauses must appear
-    correctly indented on a new line.
-  - There's no hard limit on line width, but prefer to keep lines to <100
-    characters if doing so does not decrease readability. Break up long
-    function declarations over multiple lines using the Clang Format
-    [AlignAfterOpenBracket](https://clang.llvm.org/docs/ClangFormatStyleOptions.html)
-    style option.
+- **Indentation and whitespace rules**
+  - [specification](../src/.clang-format)
+    - Braces |
+      - NEW lines | classes, functions, methods.
+      - same line | everything else.
+    - 4 space indentation (no tabs) | every block
+      - EXCEPT namespaces
+    - NO
+      - indentation | `public`/`protected`/`private` OR `namespace`.
+      - extra spaces inside parenthesis; don't do `( this )`.
+      - space after function names; one space after `if`, `for` and `while`.
+    - If an `if` only has a single-statement `then`-clause, it can appear
+      on the same line as the `if`, without braces. In every other case,
+      braces are required, and the `then` and `else` clauses must appear
+      correctly indented on a new line.
+    - There's no hard limit on line width, but prefer to keep lines to <100
+      characters if doing so does not decrease readability. Break up long
+      function declarations over multiple lines using the Clang Format
+      [AlignAfterOpenBracket](https://clang.llvm.org/docs/ClangFormatStyleOptions.html)
+      style option.
+  - if you want to clean up patches AUTOMATICALLY BEFORE submission -> use [clang-format-diff script](../contrib/devtools/README.md#clang-format-diffpy)
 
-- **Symbol naming conventions**. These are preferred in new code, but are not
-required when doing so would need changes to significant pieces of existing
-code.
+- **Symbol naming conventions**
+  - | new code,
+    - ⚠️recommended⚠️
+      - Reason:🧠 old code does NOT follow it -> it would force refactoring🧠
   - Variable (including function arguments) and namespace names are all lowercase and may use `_` to
     separate words (snake_case).
     - Class member variables have a `m_` prefix.
@@ -50,10 +52,10 @@ code.
     This is a more tolerant policy than the [C++ Core
     Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines#Renum-caps),
     which recommend using `snake_case`.  Please use what seems appropriate.
-  - Class names, function names, and method names are UpperCamelCase
-    (PascalCase). Do not prefix class names with `C`. See [Internal interface
-    naming style](#internal-interface-naming-style) for an exception to this
-    convention.
+  - Class names, function names, and method names
+    - 👀UpperCamelCase (PascalCase)👀
+    - ❌NOT prefix class names -- with -- `C`❌ 
+    - EXCEPTION: [Internal interface naming style](#internal-interface-naming-style)
 
   - Test suite naming convention: The Boost test suite in file
     `src/test/foo_tests.cpp` should be named `foo_tests`. Test suite names

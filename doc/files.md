@@ -59,24 +59,25 @@ Subdirectory       | File(s)               | Description
 
 ## Multi-wallet environment
 
-Wallets are SQLite databases.
-
-1. Each user-defined wallet named "wallet_name" resides in the `wallets/wallet_name/` subdirectory.
-
-2. The default (unnamed) wallet resides in `wallets/` subdirectory; if the latter does not exist, the wallet resides in the data directory.
-
-3. A wallet database path can be specified with the `-wallet` option.
-
-4. `wallet.dat` files must not be shared across different node instances, as that can result in key-reuse and double-spends due the lack of synchronization between instances.
-
-5. Any copy or backup of the wallet should be done through a `backupwallet` call in order to update and lock the wallet, preventing any file corruption caused by updates during the copy.
+* Wallets
+  * == 💡SQLite databases💡
+  1. if you use a user-defined wallet / 
+     * name == "wallet_name" -> placed | "wallets/wallet_name/"
+     * unnamed -> placed "wallets/"
+       * if this directory does NOT exist -> placed | [data directory](#data-directory-location)
+  2. if you want to specify the path -> use `-wallet` option
+  3. "wallet.dat"
+     * NOT share ACROSS DIFFERENT node instances
+       * Reason:🧠 OTHERWISE -> it can cause: key-reuse & double-spends (NOT synchronization BETWEEN instances)🧠
+  4. if you want to copy OR backup the wallet -> use `backupwallet` call 
+     * Reason:🧠update & lock the wallet -> prevent file corruption🧠
 
 
 ### SQLite database based wallets
 
-Subdirectory | File                 | Description
--------------|----------------------|-------------
-`./`         | `wallet.dat`         | Personal wallet (a SQLite database) with keys and transactions
+Subdirectory | File                | Description
+-------------|---------------------|-------------
+`./`         | "wallet.dat"         | == personal wallet (== SQLite database) / contains keys & transactions
 `./`         | `wallet.dat-journal` | SQLite Rollback Journal file for `wallet.dat`. Usually created at start and deleted on shutdown. A user *must keep it as safe* as the `wallet.dat` file.
 
 
@@ -109,9 +110,12 @@ Subdirectory | File(s)           | Description
 
 ## Notes
 
-<a name="note1">1</a> `/` 
+<a name="note1">1</a>  
+* `/`
   * == U+002F
   * uses | this document,
     * path component separator / platform-independent
 
-<a name="note2">2</a>. `NNNNN` == `[0-9]{5}` regex
+<a name="note2">2</a>
+* `NNNNN`
+  * == `[0-9]{5}` regex

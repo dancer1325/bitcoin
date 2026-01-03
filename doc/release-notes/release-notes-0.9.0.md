@@ -221,7 +221,13 @@ Wallet:
 
 - Bug fixes and new regression tests to correctly compute
   the balance of wallets containing double-spent (or mutated) transactions
-- Store key creation time. Calculate whole-wallet birthday.
+- [Store key creation time. Calculate whole-wallet birthday.](https://github.com/bitcoin/bitcoin/pull/1863)
+  - create `CKeyMetadata` / 
+    - stored it alongside / EACH NEW created key
+    - uses
+      - calculate a whole-wallet birthday
+      - optimize Wallet rescan
+        - Reason:🧠 earlier than the wallet birthday, skip reading and scanning blocks🧠  
 - Optimize rescan to skip blocks prior to birthday
 - Let user select wallet file with -wallet=foo.dat
 - Consider generated coins mature at 101 instead of 120 blocks

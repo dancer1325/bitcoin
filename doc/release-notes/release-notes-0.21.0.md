@@ -371,24 +371,33 @@ Without those options being set, a Legacy Wallet will be created instead.
 
 #### `IsMine` Semantics
 
-`IsMine` refers to the function used to determine whether a script belongs to the wallet.
-This is used to determine whether an output belongs to the wallet. `IsMine` in Legacy Wallets
-returns true if the wallet would be able to sign an input that spends an output with that script.
-Since keys can be involved in a variety of different scripts, this definition for `IsMine` can
-lead to many unexpected scripts being considered part of the wallet.
+* `IsMine`
+  * == function /
+    * determine whether a script (== output) belongs -- to the -- wallet
+    * returns
+      * | Legacy Wallets,
+        * ⚠️if the wallet can sign an input / spends this output -> returns `true`⚠️
+          * _Example:_ if users take 1 type of address (_Example:_ P2PKH) & mutate it into another address type (_Example:_ P2WPKH) -> wallet can STILL detect outputs / sent to the NEW address type
+            * EVEN WITHOUT that address being requested -- from the -- wallet
+          * Problems:
+            * Problem1: ⚠️keys can be involved | >1 DIFFERENT scripts ->can lead to confusion⚠️
+      * | Descriptor Wallets,
+        * if this output == script / explicitly defined | wallet's descriptors -> return `true`
+    * implementations
+      * | Descriptor Wallets -- simpler than -- | Legacy Wallets
 
-With Descriptor Wallets, descriptors explicitly specify the set of scripts that are owned by
-the wallet. Since descriptors are deterministic and easily enumerable, users will know exactly
-what scripts the wallet will consider to belong to it. Additionally the implementation of `IsMine`
-in Descriptor Wallets is far simpler than for Legacy Wallets. Notably, in Legacy Wallets, `IsMine`
-allowed for users to take one type of address (e.g. P2PKH), mutate it into another address type
-(e.g. P2WPKH), and the wallet would still detect outputs sending to the new address type
-even without that address being requested from the wallet. Descriptor Wallets do not
-allow for this and will only watch for the addresses that were explicitly requested from the wallet.
+* Descriptor Wallets
+  * specify the set of scripts / owned -- by the -- wallet
+    * -> only
+  * uses
+    * users can know exactly the scripts / belong to the wallet
+      * Reason:🧠 descriptors are 
+        * deterministic
+        * easily enumerable🧠
 
-These changes to `IsMine` will make it easier to reason about what scripts the wallet will
-actually be watching for in outputs. However for the vast majority of users, this change is
-largely transparent and will not have noticeable effect.
+* change importance
+  * | vast majority of users
+    * NOTHING
 
 #### Imports and Exports
 

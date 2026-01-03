@@ -1,28 +1,32 @@
 Unauthenticated REST Interface
 ==============================
 
-The REST API can be enabled with the `-rest` option.
-
-The interface runs on the same port as the JSON-RPC interface, by default port 8332 for mainnet, port 18332 for testnet,
-port 48332 for testnet4, port 38332 for signet, and port 18443 for regtest.
+* if you want to enable -> use `-rest` option
+* port | run
+  * by default,
+    * | mainnet,
+      * 8332
+    * | testnet,
+      * 18332
+    * | testnet4,
+      * 48332
+    * | signet,
+      * 38332
+    * regtest,
+      * 18443
+  * == port | run JSON-RPC interface 
 
 REST Interface consistency guarantees
 -------------------------------------
 
-The [same guarantees as for the RPC Interface](/doc/JSON-RPC-interface.md#rpc-consistency-guarantees)
-apply.
+* == [RPC Interface guarantees](JSON-RPC-interface.md#rpc-consistency-guarantees)
 
 Limitations
 -----------
 
-There is a known issue in the REST interface that can cause a node to crash if
-too many http connections are being opened at the same time because the system runs
-out of available file descriptors. To prevent this from happening you might
-want to increase the number of maximum allowed file descriptors in your system
-and try to prevent opening too many connections to your rest interface at the
-same time if this is under your control. It is hard to give general advice
-since this depends on your system but if you make several hundred requests at
-once you are definitely at risk of encountering this issue.
+* ⚠️if MANY http connections are being opened | SAME time -> the node can crash ⚠️ 
+  * Reason:🧠the system runs out of available file descriptors🧠
+  * Solution: increase the NUMBER of MAXIMUM ALLOWED file descriptors | your system
 
 Supported API
 -------------
