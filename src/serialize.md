@@ -1,5 +1,7 @@
 * == templates / serialize ALL stream-like
   * == ALL / supports `.read(char*, int)` & `.write(char*, int)`
+  * _Examples:_
+    * `class CDataStream`
 
 enum
 {
@@ -656,44 +658,40 @@ struct secure_allocator : public std::allocator<T>
     }
 };
 
+* `class CDataStream {`
+  * double ended buffer / combine vector + stream-like interfaces (TODO: ❓)
+  * `>>` & `<<` read & write unformatted data -- via the -- above serialization templates (TODO: ❓)
+  * fills with data | linear time (TODO: ❓)
+    * some `stringstream` implementations take N^2 time
 
-
-//
-// Double ended buffer combining vector and stream-like interfaces.
-// >> and << read and write unformatted data using the above serialization templates.
-// Fills with data in linear time; some stringstream implementations take N^2 time.
-//
-class CDataStream
-{
-protected:
-    typedef vector<char, secure_allocator<char> > vector_type;
-    vector_type vch;
-    unsigned int nReadPos;
-    short state;
-    short exceptmask;
+      typedef vector<char, secure_allocator<char> > vector_type;
+      vector_type vch;
+      unsigned int nReadPos;
+      short state;
+      short exceptmask;
 public:
-    int nType;
-    int nVersion;
+      int nType;
+      int nVersion;
 
-    typedef vector_type::allocator_type   allocator_type;
-    typedef vector_type::size_type        size_type;
-    typedef vector_type::difference_type  difference_type;
-    typedef vector_type::reference        reference;
-    typedef vector_type::const_reference  const_reference;
-    typedef vector_type::value_type       value_type;
-    typedef vector_type::iterator         iterator;
-    typedef vector_type::const_iterator   const_iterator;
-    typedef vector_type::reverse_iterator reverse_iterator;
+      typedef vector_type::allocator_type   allocator_type;
+      typedef vector_type::size_type        size_type;
+      typedef vector_type::difference_type  difference_type;
+      typedef vector_type::reference        reference;
+      typedef vector_type::const_reference  const_reference;
+      typedef vector_type::value_type       value_type;
+      typedef vector_type::iterator         iterator;
+      typedef vector_type::const_iterator   const_iterator;
+      typedef vector_type::reverse_iterator reverse_iterator;
 
-    explicit CDataStream(int nTypeIn=0, int nVersionIn=VERSION)
-    {
-        Init(nTypeIn, nVersionIn);
-    }
+      explicit CDataStream(int nTypeIn=0, int nVersionIn=VERSION)
+      {
+          Init(nTypeIn, nVersionIn);
+      }
 
-    CDataStream(const_iterator pbegin, const_iterator pend, int nTypeIn=0, int nVersionIn=VERSION) : vch(pbegin, pend)
-    {
-        Init(nTypeIn, nVersionIn);
-    }
+      CDataStream(const_iterator pbegin, const_iterator pend, int nTypeIn=0, int nVersionIn=VERSION) : vch(pbegin, pend)
+      {
+          Init(nTypeIn, nVersionIn);
+      }
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1300
     CDataStream(const char* pbegin, const char* pend, int nTypeIn=0, int nVersionIn=VERSION) : vch(pbegin, pend)

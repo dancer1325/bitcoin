@@ -1,3 +1,12 @@
+## notation
+* source code follows [Hungarian notation](https://www.cse.iitk.ac.in/users/dsrkg/cs245/html/Guide.htm)
+
+## how to load the project?
+* -- via -- IDE
+  * | [Makefile](makefile) > right click > "Load the Makefile"
+* -- via -- CL
+  * TODO:
+
 Compilers Supported
 -------------------
 MinGW GCC (v3.4.5)
