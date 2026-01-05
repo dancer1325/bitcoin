@@ -4,6 +4,11 @@
 ## how to load the project?
 * -- via -- IDE
   * | [Makefile](makefile) > right click > "Load the Makefile"
+    * Problems:
+      * Problem1: "CMakeLists.txt not found"
+        * Note: [Generated files](../cmake-build-debug) 
+        * Solution: open ⚠️ONLY [bitcoin](../) | CLion⚠️
+          * ❌NOT other folders❌
 * -- via -- CL
   * TODO:
 
