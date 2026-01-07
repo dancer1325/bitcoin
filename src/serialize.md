@@ -1,3 +1,7 @@
+* `__int64`
+  * MSVC (== Microsoft Visual C++ compiler)'s built-in extension
+    * created PREVIOUS C++11
+
 * == templates / serialize ALL stream-like
   * == ALL / supports `.read(char*, int)` & `.write(char*, int)`
   * _Examples:_
