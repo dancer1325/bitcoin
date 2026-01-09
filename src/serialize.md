@@ -1,3 +1,11 @@
+* `_MSC_VER`
+  * [Microsoft Visual C++'s built-in macro](https://learn.microsoft.com/en-us/cpp/preprocessor/predefined-macros?view=msvc-170)
+  * = 1300 -> Visual C++ .NET 2002 (7.0)
+
+* `__BORLANDC__`
+  * Borland C++'s built-in macro
+    * CURRENTLY, [Embarcadero](https://docwiki.embarcadero.com/RADStudio/Athens/en/Predefined_Macros)
+
 * `__int64`
   * MSVC (== Microsoft Visual C++ compiler)'s built-in extension
     * created PREVIOUS C++11
