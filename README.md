@@ -1,4 +1,4 @@
-BitCoin v0.01 ALPHA
+BitCoin v0.1.0
 
 Intro
 -----
