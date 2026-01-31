@@ -10,71 +10,22 @@
   * MSVC (== Microsoft Visual C++ compiler)'s built-in extension
     * created PREVIOUS C++11
 
-* == templates / serialize ALL stream-like
-  * == ALL / supports `.read(char*, int)` & `.write(char*, int)`
-  * _Examples:_
-    * `class CDataStream`
+# templates / serialize ALL stream-like
+* == ALL / supports `.read(char*, int)` & `.write(char*, int)`
+* _Examples:_
+  * `class CDataStream`
+  * `class CAutoFile`
 
-enum
-{
-    // primary actions
-    SER_NETWORK         = (1 << 0),
-    SER_DISK            = (1 << 1),
-    SER_GETHASH         = (1 << 2),
-
-    // modifiers
-    SER_SKIPSIG         = (1 << 16),
-    SER_BLOCKHEADERONLY = (1 << 17),
-};
-
-#define IMPLEMENT_SERIALIZE(statements)    \
-    unsigned int GetSerializeSize(int nType=0, int nVersion=VERSION) const  \
-    {                                           \
-        CSerActionGetSerializeSize ser_action;  \
-        const bool fGetSize = true;             \
-        const bool fWrite = false;              \
-        const bool fRead = false;               \
-        unsigned int nSerSize = 0;              \
-        ser_streamplaceholder s;                \
-        s.nType = nType;                        \
-        s.nVersion = nVersion;                  \
-        {statements}                            \
-        return nSerSize;                        \
-    }                                           \
-    template<typename Stream>                   \
-    void Serialize(Stream& s, int nType=0, int nVersion=VERSION) const  \
-    {                                           \
-        CSerActionSerialize ser_action;         \
-        const bool fGetSize = false;            \
-        const bool fWrite = true;               \
-        const bool fRead = false;               \
-        unsigned int nSerSize = 0;              \
-        {statements}                            \
-    }                                           \
-    template<typename Stream>                   \
-    void Unserialize(Stream& s, int nType=0, int nVersion=VERSION)  \
-    {                                           \
-        CSerActionUnserialize ser_action;       \
-        const bool fGetSize = false;            \
-        const bool fWrite = false;              \
-        const bool fRead = true;                \
-        unsigned int nSerSize = 0;              \
-        {statements}                            \
-    }
-
-#define READWRITE(obj)      (nSerSize += ::SerReadWrite(s, (obj), nType, nVersion, ser_action))
-
-
-
-
-
-
-//
-// Basic types
-//
-#define WRITEDATA(s, obj)   s.write((char*)&(obj), sizeof(obj))
+```c++
+# (char*)&(obj)
+#   (obj),      &(obj),     (char*)&(obj) 
 #define READDATA(s, obj)    s.read((char*)&(obj), sizeof(obj))
+#define WRITEDATA(s, obj)   s.write((char*)&(obj), sizeof(obj))
+```
 
+## template functions -- for -- basic types 
+
+```c++
 inline unsigned int GetSerializeSize(char a,           int, int=0) { return sizeof(a); }
 inline unsigned int GetSerializeSize(signed char a,    int, int=0) { return sizeof(a); }
 inline unsigned int GetSerializeSize(unsigned char a,  int, int=0) { return sizeof(a); }
@@ -120,168 +71,11 @@ template<typename Stream> inline void Unserialize(Stream& s, double& a,         
 inline unsigned int GetSerializeSize(bool a, int, int=0)                          { return sizeof(char); }
 template<typename Stream> inline void Serialize(Stream& s, bool a, int, int=0)    { char f=a; WRITEDATA(s, f); }
 template<typename Stream> inline void Unserialize(Stream& s, bool& a, int, int=0) { char f; READDATA(s, f); a=f; }
+```
 
+## template functions -- for -- STL containers
 
-
-
-
-
-//
-// Compact size
-//  size <  253        -- 1 byte
-//  size <= USHRT_MAX  -- 3 bytes  (253 + 2 bytes)
-//  size <= UINT_MAX   -- 5 bytes  (254 + 4 bytes)
-//  size >  UINT_MAX   -- 9 bytes  (255 + 8 bytes)
-//
-inline unsigned int GetSizeOfCompactSize(uint64 nSize)
-{
-    if (nSize < UCHAR_MAX-2)     return sizeof(unsigned char);
-    else if (nSize <= USHRT_MAX) return sizeof(unsigned char) + sizeof(unsigned short);
-    else if (nSize <= UINT_MAX)  return sizeof(unsigned char) + sizeof(unsigned int);
-    else                         return sizeof(unsigned char) + sizeof(uint64);
-}
-
-template<typename Stream>
-void WriteCompactSize(Stream& os, uint64 nSize)
-{
-    if (nSize < UCHAR_MAX-2)
-    {
-        unsigned char chSize = nSize;
-        WRITEDATA(os, chSize);
-    }
-    else if (nSize <= USHRT_MAX)
-    {
-        unsigned char chSize = UCHAR_MAX-2;
-        unsigned short xSize = nSize;
-        WRITEDATA(os, chSize);
-        WRITEDATA(os, xSize);
-    }
-    else if (nSize <= UINT_MAX)
-    {
-        unsigned char chSize = UCHAR_MAX-1;
-        unsigned int xSize = nSize;
-        WRITEDATA(os, chSize);
-        WRITEDATA(os, xSize);
-    }
-    else
-    {
-        unsigned char chSize = UCHAR_MAX;
-        WRITEDATA(os, chSize);
-        WRITEDATA(os, nSize);
-    }
-    return;
-}
-
-template<typename Stream>
-uint64 ReadCompactSize(Stream& is)
-{
-    unsigned char chSize;
-    READDATA(is, chSize);
-    if (chSize < UCHAR_MAX-2)
-    {
-        return chSize;
-    }
-    else if (chSize == UCHAR_MAX-2)
-    {
-        unsigned short nSize;
-        READDATA(is, nSize);
-        return nSize;
-    }
-    else if (chSize == UCHAR_MAX-1)
-    {
-        unsigned int nSize;
-        READDATA(is, nSize);
-        return nSize;
-    }
-    else
-    {
-        uint64 nSize;
-        READDATA(is, nSize);
-        return nSize;
-    }
-}
-
-
-
-//
-// Wrapper for serializing arrays and POD
-// There's a clever template way to make arrays serialize normally, but MSVC6 doesn't support it
-//
-#define FLATDATA(obj)   REF(CFlatData((char*)&(obj), (char*)&(obj) + sizeof(obj)))
-class CFlatData
-{
-protected:
-    char* pbegin;
-    char* pend;
-public:
-    CFlatData(void* pbeginIn, void* pendIn) : pbegin((char*)pbeginIn), pend((char*)pendIn) { }
-    char* begin() { return pbegin; }
-    const char* begin() const { return pbegin; }
-    char* end() { return pend; }
-    const char* end() const { return pend; }
-
-    unsigned int GetSerializeSize(int, int=0) const
-    {
-        return pend - pbegin;
-    }
-
-    template<typename Stream>
-    void Serialize(Stream& s, int, int=0) const
-    {
-        s.write(pbegin, pend - pbegin);
-    }
-
-    template<typename Stream>
-    void Unserialize(Stream& s, int, int=0)
-    {
-        s.read(pbegin, pend - pbegin);
-    }
-};
-
-
-
-//
-// string stored as a fixed length field
-//
-template<std::size_t LEN>
-class CFixedFieldString
-{
-protected:
-    const string* pcstr;
-    string* pstr;
-public:
-    explicit CFixedFieldString(const string& str) : pcstr(&str), pstr(NULL) { }
-    explicit CFixedFieldString(string& str) : pcstr(&str), pstr(&str) { }
-
-    unsigned int GetSerializeSize(int, int=0) const
-    {
-        return LEN;
-    }
-
-    template<typename Stream>
-    void Serialize(Stream& s, int, int=0) const
-    {
-        char pszBuf[LEN];
-        strncpy(pszBuf, pcstr->c_str(), LEN);
-        s.write(pszBuf, LEN);
-    }
-
-    template<typename Stream>
-    void Unserialize(Stream& s, int, int=0)
-    {
-        if (pstr == NULL)
-            throw std::ios_base::failure("CFixedFieldString::Unserialize : trying to unserialize to const string");
-        char pszBuf[LEN+1];
-        s.read(pszBuf, LEN);
-        pszBuf[LEN] = '\0';
-        *pstr = pszBuf;
-    }
-};
-
-
-
-
-
+```c++
 //
 // Forward declarations
 //
@@ -321,36 +115,6 @@ template<typename Stream, typename K, typename T, typename Pred, typename A> voi
 template<typename K, typename Pred, typename A> unsigned int GetSerializeSize(const std::set<K, Pred, A>& m, int nType, int nVersion=VERSION);
 template<typename Stream, typename K, typename Pred, typename A> void Serialize(Stream& os, const std::set<K, Pred, A>& m, int nType, int nVersion=VERSION);
 template<typename Stream, typename K, typename Pred, typename A> void Unserialize(Stream& is, std::set<K, Pred, A>& m, int nType, int nVersion=VERSION);
-
-
-
-
-
-//
-// If none of the specialized versions above matched, default to calling member function.
-// "int nType" is changed to "long nType" to keep from getting an ambiguous overload error.
-// The compiler will only cast int to long if none of the other templates matched.
-// Thanks to Boost serialization for this idea.
-//
-template<typename T>
-inline unsigned int GetSerializeSize(const T& a, long nType, int nVersion=VERSION)
-{
-    return a.GetSerializeSize((int)nType, nVersion);
-}
-
-template<typename Stream, typename T>
-inline void Serialize(Stream& os, const T& a, long nType, int nVersion=VERSION)
-{
-    a.Serialize(os, (int)nType, nVersion);
-}
-
-template<typename Stream, typename T>
-inline void Unserialize(Stream& is, T& a, long nType, int nVersion=VERSION)
-{
-    a.Unserialize(is, (int)nType, nVersion);
-}
-
-
 
 
 
@@ -597,6 +361,249 @@ void Unserialize(Stream& is, std::set<K, Pred, A>& m, int nType, int nVersion)
         it = m.insert(it, key);
     }
 }
+```
+
+## generic functions
+
+```c++
+// If none of the specialized versions above matched, default to calling member function.
+// "int nType" is changed to "long nType" to keep from getting an ambiguous overload error.
+// The compiler will only cast int to long if none of the other templates matched.
+// Thanks to Boost serialization for this idea.
+//
+template<typename T>
+inline unsigned int GetSerializeSize(const T& a, long nType, int nVersion=VERSION)
+{
+    return a.GetSerializeSize((int)nType, nVersion);
+}
+
+template<typename Stream, typename T>
+inline void Serialize(Stream& os, const T& a, long nType, int nVersion=VERSION)
+{
+    a.Serialize(os, (int)nType, nVersion);
+}
+
+template<typename Stream, typename T>
+inline void Unserialize(Stream& is, T& a, long nType, int nVersion=VERSION)
+{
+    a.Unserialize(is, (int)nType, nVersion);
+}
+```
+
+# TODO:
+
+// TODO:
+enum
+{
+    // primary actions
+    SER_NETWORK         = (1 << 0),
+    SER_DISK            = (1 << 1),
+    SER_GETHASH         = (1 << 2),
+
+    // modifiers
+    SER_SKIPSIG         = (1 << 16),
+    SER_BLOCKHEADERONLY = (1 << 17),
+};
+
+#define IMPLEMENT_SERIALIZE(statements)    \
+    unsigned int GetSerializeSize(int nType=0, int nVersion=VERSION) const  \
+    {                                           \
+        CSerActionGetSerializeSize ser_action;  \
+        const bool fGetSize = true;             \
+        const bool fWrite = false;              \
+        const bool fRead = false;               \
+        unsigned int nSerSize = 0;              \
+        ser_streamplaceholder s;                \
+        s.nType = nType;                        \
+        s.nVersion = nVersion;                  \
+        {statements}                            \
+        return nSerSize;                        \
+    }                                           \
+    template<typename Stream>                   \
+    void Serialize(Stream& s, int nType=0, int nVersion=VERSION) const  \
+    {                                           \
+        CSerActionSerialize ser_action;         \
+        const bool fGetSize = false;            \
+        const bool fWrite = true;               \
+        const bool fRead = false;               \
+        unsigned int nSerSize = 0;              \
+        {statements}                            \
+    }                                           \
+    template<typename Stream>                   \
+    void Unserialize(Stream& s, int nType=0, int nVersion=VERSION)  \
+    {                                           \
+        CSerActionUnserialize ser_action;       \
+        const bool fGetSize = false;            \
+        const bool fWrite = false;              \
+        const bool fRead = true;                \
+        unsigned int nSerSize = 0;              \
+        {statements}                            \
+    }
+
+#define READWRITE(obj)      (nSerSize += ::SerReadWrite(s, (obj), nType, nVersion, ser_action))
+
+
+
+
+
+
+
+//
+// Compact size
+//  size <  253        -- 1 byte
+//  size <= USHRT_MAX  -- 3 bytes  (253 + 2 bytes)
+//  size <= UINT_MAX   -- 5 bytes  (254 + 4 bytes)
+//  size >  UINT_MAX   -- 9 bytes  (255 + 8 bytes)
+//
+inline unsigned int GetSizeOfCompactSize(uint64 nSize)
+{
+    if (nSize < UCHAR_MAX-2)     return sizeof(unsigned char);
+    else if (nSize <= USHRT_MAX) return sizeof(unsigned char) + sizeof(unsigned short);
+    else if (nSize <= UINT_MAX)  return sizeof(unsigned char) + sizeof(unsigned int);
+    else                         return sizeof(unsigned char) + sizeof(uint64);
+}
+
+template<typename Stream>
+void WriteCompactSize(Stream& os, uint64 nSize)
+{
+    if (nSize < UCHAR_MAX-2)
+    {
+        unsigned char chSize = nSize;
+        WRITEDATA(os, chSize);
+    }
+    else if (nSize <= USHRT_MAX)
+    {
+        unsigned char chSize = UCHAR_MAX-2;
+        unsigned short xSize = nSize;
+        WRITEDATA(os, chSize);
+        WRITEDATA(os, xSize);
+    }
+    else if (nSize <= UINT_MAX)
+    {
+        unsigned char chSize = UCHAR_MAX-1;
+        unsigned int xSize = nSize;
+        WRITEDATA(os, chSize);
+        WRITEDATA(os, xSize);
+    }
+    else
+    {
+        unsigned char chSize = UCHAR_MAX;
+        WRITEDATA(os, chSize);
+        WRITEDATA(os, nSize);
+    }
+    return;
+}
+
+template<typename Stream>
+uint64 ReadCompactSize(Stream& is)
+{
+    unsigned char chSize;
+    READDATA(is, chSize);
+    if (chSize < UCHAR_MAX-2)
+    {
+        return chSize;
+    }
+    else if (chSize == UCHAR_MAX-2)
+    {
+        unsigned short nSize;
+        READDATA(is, nSize);
+        return nSize;
+    }
+    else if (chSize == UCHAR_MAX-1)
+    {
+        unsigned int nSize;
+        READDATA(is, nSize);
+        return nSize;
+    }
+    else
+    {
+        uint64 nSize;
+        READDATA(is, nSize);
+        return nSize;
+    }
+}
+
+
+
+//
+// Wrapper for serializing arrays and POD
+// There's a clever template way to make arrays serialize normally, but MSVC6 doesn't support it
+//
+#define FLATDATA(obj)   REF(CFlatData((char*)&(obj), (char*)&(obj) + sizeof(obj)))
+class CFlatData
+{
+protected:
+    char* pbegin;
+    char* pend;
+public:
+    CFlatData(void* pbeginIn, void* pendIn) : pbegin((char*)pbeginIn), pend((char*)pendIn) { }
+    char* begin() { return pbegin; }
+    const char* begin() const { return pbegin; }
+    char* end() { return pend; }
+    const char* end() const { return pend; }
+
+    unsigned int GetSerializeSize(int, int=0) const
+    {
+        return pend - pbegin;
+    }
+
+    template<typename Stream>
+    void Serialize(Stream& s, int, int=0) const
+    {
+        s.write(pbegin, pend - pbegin);
+    }
+
+    template<typename Stream>
+    void Unserialize(Stream& s, int, int=0)
+    {
+        s.read(pbegin, pend - pbegin);
+    }
+};
+
+
+
+//
+// string stored as a fixed length field
+//
+template<std::size_t LEN>
+class CFixedFieldString
+{
+protected:
+    const string* pcstr;
+    string* pstr;
+public:
+    explicit CFixedFieldString(const string& str) : pcstr(&str), pstr(NULL) { }
+    explicit CFixedFieldString(string& str) : pcstr(&str), pstr(&str) { }
+
+    unsigned int GetSerializeSize(int, int=0) const
+    {
+        return LEN;
+    }
+
+    template<typename Stream>
+    void Serialize(Stream& s, int, int=0) const
+    {
+        char pszBuf[LEN];
+        strncpy(pszBuf, pcstr->c_str(), LEN);
+        s.write(pszBuf, LEN);
+    }
+
+    template<typename Stream>
+    void Unserialize(Stream& s, int, int=0)
+    {
+        if (pstr == NULL)
+            throw std::ios_base::failure("CFixedFieldString::Unserialize : trying to unserialize to const string");
+        char pszBuf[LEN+1];
+        s.read(pszBuf, LEN);
+        pszBuf[LEN] = '\0';
+        *pstr = pszBuf;
+    }
+};
+
+
+
+
+
 
 
 
@@ -670,6 +677,7 @@ struct secure_allocator : public std::allocator<T>
     }
 };
 
+# `class CDataStream {`
 * `class CDataStream {`
   * double ended buffer / combine vector + stream-like interfaces (TODO: ❓)
   * `>>` & `<<` read & write unformatted data -- via the -- above serialization templates (TODO: ❓)
@@ -953,6 +961,8 @@ public:
     }
 };
 
+# `int main(int argc, char *argv[]) {`
+
 #ifdef TESTCDATASTREAM
 // VC6sp6
 // CDataStream:
@@ -1004,14 +1014,7 @@ int main(int argc, char *argv[])
 }
 #endif
 
-
-
-
-
-
-
-
-
+# `class CAutoFile`
 
 //
 // Automatic closing wrapper for FILE*
