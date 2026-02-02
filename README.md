@@ -11,11 +11,13 @@ Operating Systems
 -----------------
 * Windows NT/2000/XP (probably Vista)
   * Reason of probably Vista:🧠NOT YET tested🧠
+  * NOT portable to others
 
 * FUTURE
   * Linux & Mac builds
-    * NO PROBLEMS -- from -- libraries
-      * Reason:🧠 libraries used are cross-platform🧠 so
+    * PROBLEMS
+      * certain libraries 
+        * _Example:_ [_beginthread](https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/beginthread-beginthreadex?view=msvc-170)
 
 # Setup
 
