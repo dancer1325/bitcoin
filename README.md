@@ -20,7 +20,7 @@ Operating Systems
         * _Example:_ [_beginthread](https://learn.microsoft.com/en-us/cpp/c-runtime-library/reference/beginthread-beginthreadex?view=msvc-170)
 
 # Setup
-
+* | [Makefile](src/makefile) > right click > Load makefile
 * run [bitcoin.exe](bitcoin.exe)
   * -> AUTOMATICALLY finds OTHER nodes -- to -- connect to
 * set your firewall / forward port 8333 -- to -- your computer
