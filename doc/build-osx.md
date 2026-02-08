@@ -100,7 +100,8 @@ For more information on IPC, see: [multiprocess.md](multiprocess.md).
 #### Test Suite Dependencies
 
 * allows
-  * | develop, test code changes
+  * | develop, 
+    * test code changes
 * requirements
   * `brew install python`
 

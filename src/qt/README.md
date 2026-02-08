@@ -1,36 +1,43 @@
-This directory contains the source code for the Bitcoin Core graphical user interface (GUI). It uses the [Qt](https://www1.qt.io/developers/) cross-platform framework.
+* goal
+  * Bitcoin Core Graphical User Interface (GUI)
 
-The current precise version for Qt is specified in [qt_details.mk](/depends/packages/qt_details.mk).
+* -- based on -- [Qt](https://www1.qt.io/developers/)
+  * [current version](/depends/packages/qt_details.mk)
 
 ## Compile and run
 
-See build instructions: [Unix](/doc/build-unix.md), [macOS](/doc/build-osx.md), [Windows](/doc/build-windows-msvc.md), [FreeBSD](/doc/build-freebsd.md), [NetBSD](/doc/build-netbsd.md), [OpenBSD](/doc/build-openbsd.md)
+* how to build?
+  * | [Unix](/doc/build-unix.md)
+  * | [macOS](/doc/build-osx.md)
+  * | [Windows](/doc/build-windows-msvc.md)
+  * | [FreeBSD](/doc/build-freebsd.md)
+  * | [NetBSD](/doc/build-netbsd.md)
+  * | [OpenBSD](/doc/build-openbsd.md)
 
-When following your systems build instructions, make sure to install the `Qt` dependencies.
+* how to run?
 
-To run:
-
-```sh
-./build/bin/bitcoin-qt
-```
+  ```sh
+  ./build/bin/bitcoin-qt
+  ```
 
 ## Files and Directories
 
-#### forms/
+#### [forms/](forms/)
 
-- A directory that contains [Designer UI](https://doc.qt.io/qt-5.9/designer-using-a-ui-file.html) files. These files specify the characteristics of form elements in XML. Qt UI files can be edited with [Qt Creator](#using-qt-creator-as-ide) or using any text editor.
+#### [locale/](locale/)
 
-#### locale/
+- Contains translations
+* They are periodically updated and an effort is made to support as many languages as possible
+* The process of contributing translations is described in [doc/translation_process.md](/doc/translation_process.md).
 
-- Contains translations. They are periodically updated and an effort is made to support as many languages as possible. The process of contributing translations is described in [doc/translation_process.md](/doc/translation_process.md).
-
-#### res/
+#### [res/](res/)
 
  - Contains graphical resources used to enhance the UI experience.
 
-#### test/
+#### [test/](test/)
 
-- Functional tests used to ensure proper functionality of the GUI. Significant changes to the GUI code normally require new or updated tests.
+- Functional tests used to ensure proper functionality of the GUI
+* Significant changes to the GUI code normally require new or updated tests.
 
 #### bitcoingui.(h/cpp)
 
@@ -74,9 +81,13 @@ See [CONTRIBUTING.md](/CONTRIBUTING.md) for general guidelines.
 
 **Note:** Do not change `local/bitcoin_en.ts`. It is updated [automatically](/doc/translation_process.md#writing-code-with-translations).
 
-## Using Qt Creator as an IDE
+## [Qt Creator](https://www.qt.io/product/development-tools)
 
-[Qt Creator](https://www.qt.io/product/development-tools) is a powerful tool which packages a UI designer tool (Qt Designer) and a C++ IDE into one application. This is especially useful if you want to change the UI layout.
+### -- as an -- IDE
+
+powerful tool which packages a UI designer tool (Qt Designer) and a C++ IDE into one application
+* uses
+  * adjust UI layout
 
 #### Download Qt Creator
 
@@ -122,3 +133,8 @@ sudo apt-get install qtcreator
 8. While in the `Projects` tab, ensure that you have the `bitcoin-qt` executable specified under `Run`
  - If the executable is not specified: click `"Choose..."`, navigate to `build/bin`, and select `bitcoin-qt`
 9. You're all set! Start developing, building, and debugging the Bitcoin Core GUI
+
+### -- as a -- plugin / extension
+* ALLOWED |
+  * [CLion](https://www.qt.io/blog/developing-qt-applications-with-clion)
+  * TODO: 
