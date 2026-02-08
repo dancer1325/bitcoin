@@ -33,7 +33,7 @@ Dependencies
 
 OpenSSL
 -------
-* Bitcoin does NOT use encryption
+* Bitcoin does NOT use encryption 
 * if you want to exclude encryption routines -> do a no-everything build of OpenSSL -> steps
   * OpenSSL v0.9.8h
   * add | "crypto\err\err_all.c" & `BEFORE void ERR_load_RSA_strings(void) { }`
