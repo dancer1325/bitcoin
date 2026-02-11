@@ -3,45 +3,54 @@
 * goal
   * unit test cases
 
-* Boost unit testing framework
+* -- based on -- [Boost.test](https://www.boost.org/doc/libs/latest/libs/test/doc/html/index.html)
   * Reason to use it: Bitcoin Core ALREADY uses Boost
 
-* TODO: The build system is set up to compile an executable called `test_bitcoin`
-that runs all of the unit tests. The main source file for the test library is found in
-`util/setup_common.cpp`.
+* [`test_bitcoin`](CMakeLists.txt)
+  * == executable / 
+    * managed -- by the -- build system
+    * runs ALL unit tests
 
-The examples in this document assume the build directory is named
-`build`. You'll need to adapt them if you named it differently.
+* "util/setup_common.cpp"
+  * == test library's main source file 
 
-### Compiling/running unit tests
+* "build/"
+  * == default build directory 
+    * if you named it differently -> adapt it 
 
-Unit tests will be automatically compiled if dependencies were met
-during the generation of the Bitcoin Core build system
-and tests weren't explicitly disabled.
+### how to compile & run unit tests?
 
-The unit tests can be run with `ctest --test-dir build`, which includes unit
-tests from subtrees.
+* if dependencies were met | generation of the Bitcoin Core build system & tests were NOT EXPLICITLY disabled -> unit tests are AUTOMATICALLY compiled 
 
-Run `build/bin/test_bitcoin --list_content` for the full list of tests.
+* `ctest --test-dir build`
+  * run the unit tests
+    * EVEN subtrees' tests 
 
-To run the unit tests manually, launch `build/bin/test_bitcoin`. To recompile
-after a test file was modified, run `cmake --build build` and then run the test again. If you
-modify a non-test file, use `cmake --build build --target test_bitcoin` to recompile only what's needed
-to run the unit tests.
+* `build/bin/test_bitcoin --list_content` 
+  * run the FULL list of tests
 
-To add more unit tests, add `BOOST_AUTO_TEST_CASE` functions to the existing
-.cpp files in the `test/` directory or add new .cpp files that
-implement new `BOOST_AUTO_TEST_SUITE` sections.
+* `build/bin/test_bitcoin`
+  * run the unit tests MANUALLY 
 
-To run the GUI unit tests manually, launch `build/bin/test_bitcoin-qt`
+* if a 
+  * test file was modified -> recompile -- via -- `cmake --build build`
+  * non-test file was modified -> recompile -- via -- `cmake --build build --target test_bitcoin`
+    * == recompile ONLY what's needed
 
-To add more GUI unit tests, add them to the `src/qt/test/` directory and
-the `src/qt/test/test_main.cpp` file.
+* ways to add MORE unit tests
+  * add `BOOST_AUTO_TEST_CASE` functions | existing "test/*.cpp" files
+  * add new .cpp files / implement new `BOOST_AUTO_TEST_SUITE` sections
+
+* `build/bin/test_bitcoin-qt`
+  * run the GUI unit tests MANUALLY 
+
+* if you want to add MORE GUI unit tests -> add them | "src/qt/test/" & "src/qt/test/test_main.cpp"
 
 ### Running individual tests
 
 The `test_bitcoin` runner accepts command line arguments from the Boost
-framework. To see the list of arguments that may be passed, run:
+framework
+* To see the list of arguments that may be passed, run:
 
 ```
 build/bin/test_bitcoin --help
@@ -68,7 +77,8 @@ build/bin/test_bitcoin --run_test=getarg_tests/doubledash
 The `--log_level=` (or `-l`) argument controls the verbosity of the test output.
 
 The `test_bitcoin` runner also accepts some of the command line arguments accepted by
-`bitcoind`. Use `--` to separate these sets of arguments:
+`bitcoind`
+* Use `--` to separate these sets of arguments:
 
 ```bash
 build/bin/test_bitcoin --log_level=all --run_test=getarg_tests -- -printtoconsole=1
@@ -83,16 +93,20 @@ generated pathname within `test_common bitcoin/`, which in turn is within
 the system's temporary directory (see
 [`temp_directory_path`](https://en.cppreference.com/w/cpp/filesystem/temp_directory_path)).
 This data directory looks like a simplified form of the standard `bitcoind` data
-directory. Its content will vary depending on the test, but it will always
+directory
+* Its content will vary depending on the test, but it will always
 have a `debug.log` file, for example.
 
 The location of the temporary data directory can be specified with the
-`-testdatadir` option. This can make debugging easier. The directory
+`-testdatadir` option
+* This can make debugging easier
+* The directory
 path used is the argument path appended with
 `/test_common bitcoin/<test-name>/datadir`.
 The directory path is created if necessary.
 Specifying this argument also causes the data directory
-not to be removed after the last test. This is useful for looking at
+not to be removed after the last test
+* This is useful for looking at
 what the test wrote to `debug.log` after it completes, for example.
 (The directory is removed at the start of the next test run,
 so no leftover state is used.)
@@ -117,22 +131,28 @@ will be created for each individual test.
 
 To add a new unit test file to our test suite, you need
 to add the file to either `src/test/CMakeLists.txt` or
-`src/wallet/test/CMakeLists.txt` for wallet-related tests. The pattern is to create
+`src/wallet/test/CMakeLists.txt` for wallet-related tests
+* The pattern is to create
 one test file for each class or source file for which you want to create
-unit tests. The file naming convention is `<source_filename>_tests.cpp`
+unit tests
+* The file naming convention is `<source_filename>_tests.cpp`
 and such files should wrap their tests in a test suite
-called `<source_filename>_tests`. For an example of this pattern,
+called `<source_filename>_tests`
+* For an example of this pattern,
 see `uint256_tests.cpp`.
 
 ### Logging and debugging in unit tests
 
-`ctest --test-dir build` will write to the log file `build/Testing/Temporary/LastTest.log`. You can
+`ctest --test-dir build` will write to the log file `build/Testing/Temporary/LastTest.log`
+* You can
 additionally use the `--output-on-failure` option to display logs of the failed tests automatically
-on failure. For running individual tests verbosely, refer to the section
+on failure
+* For running individual tests verbosely, refer to the section
 [above](#running-individual-tests).
 
 To write to logs from unit tests you need to use specific message methods
-provided by Boost. The simplest is `BOOST_TEST_MESSAGE`.
+provided by Boost
+* The simplest is `BOOST_TEST_MESSAGE`.
 
 For debugging you can launch the `test_bitcoin` executable with `gdb` or `lldb` and
 start debugging, just like you would with any other program:
@@ -151,9 +171,12 @@ Another tool that can be used to resolve segmentation faults is
 [valgrind](https://valgrind.org/).
 
 If for whatever reason you want to produce a core dump file for this fault, you can do
-that as well. By default, the boost test runner will intercept system errors and not
-produce a core file. To bypass this, add `--catch_system_errors=no` to the
-`test_bitcoin` arguments and ensure that your ulimits are set properly (e.g. `ulimit -c
+that as well
+* By default, the boost test runner will intercept system errors and not
+produce a core file
+* To bypass this, add `--catch_system_errors=no` to the
+`test_bitcoin` arguments and ensure that your ulimits are set properly (e.g
+* `ulimit -c
 unlimited`).
 
 Running the tests and hitting a segmentation fault should now produce a file called `core`
